@@ -89,6 +89,12 @@ impl VM {
                     self.pc = target as usize;
                 }
             }
+            Opcode::JNEQ => {
+                let target = self.registers[self.next_8_bits() as usize];
+                if !self.equal_flag {
+                    self.pc = target as usize;
+                }
+            }
             _ => {
                 println!("Uncovered instructin! Terminating!");
                 return true;
@@ -252,4 +258,18 @@ mod tests {
         test_vm.run_once();
         assert_eq!(test_vm.pc, 5);
     }
+
+    #[test]
+    fn test_opcode_jneq() {
+        let mut test_vm = get_test_vm();
+        test_vm.equal_flag = true;
+        test_vm.program = vec![11, 0, 11, 0];
+        test_vm.run_once();
+        assert_eq!(test_vm.pc, 2);
+
+        test_vm.registers[0] = 5;
+        test_vm.equal_flag = false;
+        test_vm.run_once();
+        assert_eq!(test_vm.pc, 5);
+     }
 }
