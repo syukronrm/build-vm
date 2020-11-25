@@ -59,6 +59,18 @@ impl VM {
                 self.registers[self.next_8_bits() as usize] = register1 / register2;
                 self.remainder = (register1 % register2) as u32;
             }
+            Opcode::JMP => {
+                let register = self.registers[self.next_8_bits() as usize];
+                self.pc = register as usize;
+            }
+            Opcode::JMPF => {
+                let value = self.registers[self.next_8_bits() as usize];
+                self.pc += value as usize;
+            }
+            Opcode::JMPB => {
+                let value = self.registers[self.next_8_bits() as usize];
+                self.pc -= value as usize;
+            }
             Opcode::HLT => {
                 println!("HLT encountered");
                 return true;
@@ -169,5 +181,32 @@ mod tests {
         test_vm.run_once();
         assert_eq!(test_vm.registers[2], 2);
         assert_eq!(test_vm.remainder, 0);
+    }
+
+    #[test]
+    fn test_opcode_jmp() {
+        let mut test_vm = get_test_vm();
+        let test_bytes = vec![6, 0, 0, 0];
+        test_vm.program = test_bytes;
+        test_vm.run_once();
+        assert_eq!(test_vm.pc, 5);
+    }
+
+    #[test]
+    fn test_opcode_jmpf() {
+        let mut test_vm = get_test_vm();
+        test_vm.registers[0] = 2;
+        test_vm.program = vec![7, 0, 0, 0, 1, 0, 1, 2];
+        test_vm.run_once();
+        assert_eq!(test_vm.pc, 4);
+    }
+
+    #[test]
+    fn test_opcode_jmpb() {
+        let mut test_vm = get_test_vm();
+        test_vm.registers[0] = 1;
+        test_vm.program = vec![8, 0, 0, 0, 1, 0, 1, 2];
+        test_vm.run_once();
+        assert_eq!(test_vm.pc, 1);
     }
 }
