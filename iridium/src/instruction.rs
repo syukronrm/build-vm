@@ -5,10 +5,12 @@ pub enum Opcode {
     SUB,
     MUL,
     DIV,
+    HLT,
     JMP,
     JMPF,
     JMPB,
-    HLT,
+    EQ,
+    JEQ,
     IGL,
 }
 
@@ -24,6 +26,8 @@ impl From<u8> for Opcode {
             6 => return Opcode::JMP,
             7 => return Opcode::JMPF,
             8 => return Opcode::JMPB,
+            9 => return Opcode::EQ,
+            10 => return Opcode::JEQ,
             _ => return Opcode::IGL,
         }
     }
