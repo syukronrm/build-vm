@@ -4,6 +4,7 @@ pub struct VM {
     registers: [i32; 32],
     pc: usize,
     program: Vec<u8>,
+    remainder: u32,
 }
 
 impl VM {
@@ -12,6 +13,7 @@ impl VM {
             registers: [0; 32],
             pc: 0,
             program: vec![],
+            remainder: 0,
         }
     }
 
@@ -50,6 +52,12 @@ impl VM {
                 let register1 = self.registers[self.next_8_bits() as usize];
                 let register2 = self.registers[self.next_8_bits() as usize];
                 self.registers[self.next_8_bits() as usize] = register1 * register2;
+            }
+            Opcode::DIV => {
+                let register1 = self.registers[self.next_8_bits() as usize];
+                let register2 = self.registers[self.next_8_bits() as usize];
+                self.registers[self.next_8_bits() as usize] = register1 / register2;
+                self.remainder = (register1 % register2) as u32;
             }
             Opcode::HLT => {
                 println!("HLT encountered");
@@ -151,5 +159,15 @@ mod tests {
         test_vm.program = test_bytes;
         test_vm.run_once();
         assert_eq!(test_vm.registers[2], 50);
+    }
+
+    #[test]
+    fn test_opcode_div() {
+        let mut test_vm = get_test_vm();
+        let test_bytes = vec![4, 1, 0, 2];
+        test_vm.program = test_bytes;
+        test_vm.run_once();
+        assert_eq!(test_vm.registers[2], 2);
+        assert_eq!(test_vm.remainder, 0);
     }
 }
