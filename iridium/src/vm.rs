@@ -271,5 +271,5 @@ mod tests {
         test_vm.equal_flag = false;
         test_vm.run_once();
         assert_eq!(test_vm.pc, 5);
-     }
+    }
 }
