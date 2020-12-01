@@ -62,6 +62,7 @@ impl REPL {
                             println!("Unable to decode hex string. Please enter 4 groups of 2 hex characters.");
                         }
                     }
+                    self.vm.run_once();
                 }
             }
         }
@@ -71,7 +72,7 @@ impl REPL {
         let split: Vec<&str> = i.split(' ').collect();
         let mut programs = vec![];
         for s in split {
-            let byte = s.parse::<u8>();
+            let byte = u8::from_str_radix(s, 16);
             match byte {
                 Ok(b) => programs.push(b),
                 Err(err) => return Err(err),
