@@ -1,4 +1,4 @@
-use crate::assembler::Token;
+use super::Token;
 use nom::character::complete::digit1;
 
 named!(integer_operand<&str, Token>,

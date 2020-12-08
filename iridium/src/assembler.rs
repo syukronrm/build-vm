@@ -1,4 +1,5 @@
-use crate::instruction::Opcode;
+use super::instruction::Opcode;
+
 mod opcode_parsers;
 mod operand_parsers;
 mod register_parsers;

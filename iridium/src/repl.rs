@@ -1,4 +1,4 @@
-use crate::vm::VM;
+use super::vm::VM;
 use std::{
     io::{self, Write},
     num::ParseIntError,
