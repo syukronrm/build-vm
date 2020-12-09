@@ -2,7 +2,7 @@ use super::opcode_parsers::*;
 use super::operand_parsers::*;
 use super::register_parsers::*;
 use super::Token;
-use nom::character::is_alphabetic;
+use nom::{character::complete::multispace0, IResult};
 
 #[derive(Debug, PartialEq)]
 pub struct AssemblerInstruction {
@@ -52,24 +52,22 @@ impl AssemblerInstruction {
     }
 }
 
-// Handle parse the following form:
-// LOAD $0 #100
-named!(pub instruction_one<&str, AssemblerInstruction>,
-    do_parse!(
-        take_till!(|c| is_alphabetic(c as u8)) >>
-        o: opcode_load >>
-        r: register >>
-        i: integer_operand >>
-        (
-            AssemblerInstruction {
-                opcode: o,
-                operand1: Some(r),
-                operand2: Some(i),
-                operand3: None,
-            }
-        )
-    )
-);
+pub fn instruction_one(i: &str) -> IResult<&str, AssemblerInstruction> {
+    let (i, _) = multispace0(i)?;
+    let (i, o) = opcode_load(i)?;
+    let (i, r) = register(i)?;
+    let (i, i_) = integer_operand(i)?;
+    let (i, _) = multispace0(i)?;
+    Ok((
+        i,
+        AssemblerInstruction {
+            opcode: o,
+            operand1: Some(r),
+            operand2: Some(i_),
+            operand3: None,
+        },
+    ))
+}
 
 #[cfg(test)]
 mod tests {

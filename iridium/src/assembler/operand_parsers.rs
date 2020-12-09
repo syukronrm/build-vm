@@ -1,18 +1,21 @@
 use super::Token;
-use nom::character::complete::digit1;
+use nom::bytes::complete::tag;
+use nom::{
+    character::complete::{digit1, multispace0},
+    IResult,
+};
 
-named!(pub integer_operand<&str, Token>,
-    do_parse!(
-        take_while!(|c| c == ' ' || c == '\t') >>
-        tag!("#") >>
-        operand: digit1 >>
-        (
-            Token::IntegerOperand {
-                value: operand.parse::<i32>().unwrap()
-            }
-        )
-    )
-);
+pub fn integer_operand(i: &str) -> IResult<&str, Token> {
+    let (i, _) = multispace0(i)?;
+    let (i, _) = tag("#")(i)?;
+    let (i, operand) = digit1(i)?;
+    Ok((
+        i,
+        Token::IntegerOperand {
+            value: operand.parse::<i32>().unwrap(),
+        },
+    ))
+}
 
 #[cfg(test)]
 mod tests {

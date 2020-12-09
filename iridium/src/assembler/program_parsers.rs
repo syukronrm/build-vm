@@ -1,3 +1,6 @@
+use nom::combinator::complete;
+use nom::{multi::many1, IResult};
+
 use super::instruction_parsers::instruction_one;
 use super::instruction_parsers::AssemblerInstruction;
 
@@ -16,27 +19,10 @@ impl Program {
     }
 }
 
-//named!(pub program<&str, Program>,
-//    do_parse!(
-//        res: many_till!(instruction_one, eof!()) >>
-//        (
-//            Program {
-//                instructions: res.0
-//            }
-//        )
-//    )
-//);
-
-named!(pub program<&str, Program>,
-    do_parse!(
-        res: many1!(complete!(instruction_one)) >>
-        (
-            Program {
-                instructions: res
-            }
-        )
-    )
-);
+pub fn program(i: &str) -> IResult<&str, Program> {
+    let (i, instructions) = many1(complete(instruction_one))(i)?;
+    Ok((i, Program { instructions }))
+}
 
 #[cfg(test)]
 mod tests {
@@ -48,7 +34,7 @@ mod tests {
         println!("{:#?}", result);
         assert_eq!(result.is_ok(), true);
         let (leftover, p) = result.unwrap();
-        assert_eq!(leftover, "\n");
+        assert_eq!(leftover, "");
         assert_eq!(p.instructions.len(), 1);
     }
 
@@ -58,7 +44,7 @@ mod tests {
         println!("{:#?}", result);
         assert_eq!(result.is_ok(), true);
         let (leftover, p) = result.unwrap();
-        assert_eq!(leftover, "\n");
+        assert_eq!(leftover, "");
         assert_eq!(p.instructions.len(), 2);
     }
 }

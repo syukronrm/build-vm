@@ -1,11 +1,13 @@
+use nom::IResult;
+
 use super::Token;
 use crate::instruction::Opcode;
+use nom::bytes::complete::tag;
 
-named!(pub opcode_load<&str, Token>,
-    do_parse!(
-        tag!("load") >> (Token::Op { code: Opcode::LOAD })
-    )
-);
+pub fn opcode_load(i: &str) -> IResult<&str, Token> {
+    let (i, _) = tag("load")(i)?;
+    Ok((i, Token::Op { code: Opcode::LOAD }))
+}
 
 #[cfg(test)]
 mod tests {
