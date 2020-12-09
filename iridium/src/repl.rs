@@ -3,6 +3,7 @@ use std::{
     io::{self, Write},
     num::ParseIntError,
 };
+use crate::assembler::program_parsers::program;
 
 pub struct REPL {
     command_buffer: Vec<String>,
@@ -53,15 +54,29 @@ impl REPL {
                     println!("End of regiter listing")
                 }
                 _ => {
-                    let result = self.parse_hex(buffer);
-                    match result {
-                        Ok(bytes) => {
-                            self.vm.program.append(&mut bytes.clone());
-                        }
-                        Err(_) => {
-                            println!("Unable to decode hex string. Please enter 4 groups of 2 hex characters.");
-                        }
+                    println!("{:#?}", buffer);
+                    let parsed_program = program(buffer);
+                    if !parsed_program.is_ok() {
+                        println!("Unable to parse input");
+                        continue;
                     }
+
+                    let (_, result) = parsed_program.unwrap();
+                    let bytecodes = result.to_bytes();
+
+                    for byte in bytecodes {
+                        self.vm.add_byte(byte);
+                    }
+
+//                     let result = self.parse_hex(buffer);
+//                    match result {
+//                        Ok(bytes) => {
+//                            self.vm.program.append(&mut bytes.clone());
+//                        }
+//                        Err(_) => {
+//                            println!("Unable to decode hex string. Please enter 4 groups of 2 hex characters.");
+//                        }
+//                    }
                     self.vm.run_once();
                 }
             }

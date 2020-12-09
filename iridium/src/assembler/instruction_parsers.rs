@@ -2,7 +2,7 @@ use super::opcode_parsers::*;
 use super::operand_parsers::*;
 use super::register_parsers::*;
 use super::Token;
-use nom::{IResult, combinator::map_res, bytes::complete::take_till, character::is_alphabetic};
+use nom::character::is_alphabetic;
 
 #[derive(Debug, PartialEq)]
 pub struct AssemblerInstruction {
@@ -12,11 +12,51 @@ pub struct AssemblerInstruction {
     operand3: Option<Token>,
 }
 
+impl AssemblerInstruction {
+    pub fn to_bytes(&self) -> Vec<u8> {
+        let mut bytes = vec![];
+
+        match self.opcode {
+            Token::Op { code } => match code {
+                _ => {
+                    bytes.push(code as u8);
+                }
+            },
+            _ => {
+                println!("Non-opcode found in opcode field");
+                std::process::exit(1);
+            }
+        }
+
+        for token in vec![&self.operand1, &self.operand2, &self.operand3] {
+            match token {
+                Some(t) => match t {
+                    Token::Register { reg_num } => bytes.push(*reg_num),
+                    Token::IntegerOperand { value } => {
+                        let u16int = *value as u16;
+                        let byte1 = u16int as u8;
+                        let byte2 = (u16int >> 8) as u8;
+                        bytes.push(byte2);
+                        bytes.push(byte1);
+                    }
+                    _ => {
+                        println!("Opcode found in operand field");
+                        std::process::exit(1);
+                    }
+                },
+                _ => {}
+            }
+        }
+
+        bytes
+    }
+}
+
 // Handle parse the following form:
 // LOAD $0 #100
 named!(pub instruction_one<&str, AssemblerInstruction>,
     do_parse!(
-        // take_till!(|c| is_alphabetic(c as u8)) >>
+        take_till!(|c| is_alphabetic(c as u8)) >>
         o: opcode_load >>
         r: register >>
         i: integer_operand >>
