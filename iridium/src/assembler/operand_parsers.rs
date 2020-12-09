@@ -1,7 +1,7 @@
 use super::Token;
 use nom::character::complete::digit1;
 
-named!(integer_operand<&str, Token>,
+named!(pub integer_operand<&str, Token>,
     do_parse!(
         take_while!(|c| c == ' ' || c == '\t') >>
         tag!("#") >>

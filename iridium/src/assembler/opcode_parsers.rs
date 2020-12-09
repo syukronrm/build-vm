@@ -1,7 +1,7 @@
 use super::Token;
 use crate::instruction::Opcode;
 
-named!(opcode_load<&str, Token>,
+named!(pub opcode_load<&str, Token>,
     do_parse!(
         tag!("load") >> (Token::Op { code: Opcode::LOAD })
     )
