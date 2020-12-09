@@ -5,19 +5,6 @@ use nom::{
     IResult,
 };
 
-// named!(pub register<&str, Token>,
-//     do_parse!(
-//         multispace0 >>
-//         tag!("$") >>
-//         reg_num: digit1 >>
-//         (
-//             Token::Register {
-//                 reg_num: reg_num.parse::<u8>().unwrap()
-//             }
-//         )
-//     )
-// );
-
 pub fn register(i: &str) -> IResult<&str, Token> {
     let (i, _) = multispace0(i)?;
     let (i, _) = tag("$")(i)?;
