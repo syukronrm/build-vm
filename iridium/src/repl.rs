@@ -48,7 +48,7 @@ impl REPL {
                 ".registers" => {
                     println!("Listing registers:");
                     println!("{:#?}", self.vm.registers);
-                    println!("End of regiter listing")
+                    println!("End of register listing")
                 }
                 _ => {
                     match program(buffer) {
