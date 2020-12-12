@@ -29,26 +29,29 @@ impl AssemblerInstruction {
         }
 
         for token in vec![&self.operand1, &self.operand2, &self.operand3] {
-            match token {
-                Some(t) => match t {
-                    Token::Register { reg_num } => bytes.push(*reg_num),
-                    Token::IntegerOperand { value } => {
-                        let u16int = *value as u16;
-                        let byte1 = u16int as u8;
-                        let byte2 = (u16int >> 8) as u8;
-                        bytes.push(byte2);
-                        bytes.push(byte1);
-                    }
-                    _ => {
-                        println!("Opcode found in operand field");
-                        std::process::exit(1);
-                    }
-                },
-                _ => {}
+            if let Some(t) = token {
+                AssemblerInstruction::extract_instruction(t, &mut bytes);
             }
         }
 
         bytes
+    }
+
+    fn extract_instruction(token: &Token, bytes: &mut Vec<u8>) {
+        match token {
+            Token::Register { reg_num } => bytes.push(*reg_num),
+            Token::IntegerOperand { value } => {
+                let u16int = *value as u16;
+                let byte1 = u16int as u8;
+                let byte2 = (u16int >> 8) as u8;
+                bytes.push(byte2);
+                bytes.push(byte1);
+            }
+            _ => {
+                println!("Opcode found in operand field");
+                std::process::exit(1);
+            }
+        }
     }
 }
 

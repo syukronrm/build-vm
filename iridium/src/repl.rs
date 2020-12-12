@@ -51,18 +51,14 @@ impl REPL {
                     println!("End of regiter listing")
                 }
                 _ => {
-                    println!("{:#?}", buffer);
-                    let parsed_program = program(buffer);
-                    if !parsed_program.is_ok() {
-                        println!("Unable to parse input");
-                        continue;
-                    }
-
-                    let (_, result) = parsed_program.unwrap();
-                    let bytecodes = result.to_bytes();
-
-                    for byte in bytecodes {
-                        self.vm.add_byte(byte);
+                    match program(buffer) {
+                        Ok((_, program)) => {
+                            self.vm.program.append(&mut program.to_bytes());
+                        }
+                        _ => {
+                            println!("Unable to parse input");
+                            continue;
+                        }
                     }
 
                     self.vm.run_once();
