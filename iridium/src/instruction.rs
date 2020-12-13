@@ -35,6 +35,26 @@ impl From<u8> for Opcode {
     }
 }
 
+impl From<&str> for Opcode {
+    fn from(v: &str) -> Self {
+        match v {
+            "load" => Opcode::LOAD,
+            "add" => Opcode::ADD,
+            "sub" => Opcode::SUB,
+            "mul" => Opcode::MUL,
+            "div" => Opcode::DIV,
+            "hlt" => Opcode::HLT,
+            "jmp" => Opcode::JMP,
+            "jmpf" => Opcode::JMPF,
+            "jmpb" => Opcode::JMPB,
+            "eq" => Opcode::EQ,
+            "jeq" => Opcode::JEQ,
+            "jneq" => Opcode::JNEQ,
+            _ => Opcode::IGL,
+        }
+    }
+}
+
 #[derive(Debug, PartialEq)]
 pub struct Instruction {
     opcode: Opcode,
@@ -60,5 +80,14 @@ mod tests {
     fn test_create_instruction() {
         let instruction = Instruction::new(Opcode::HLT);
         assert_eq!(instruction.opcode, Opcode::HLT)
+    }
+
+    #[test]
+    fn test_str_to_opcode() {
+        let opcode = Opcode::from("load");
+        assert_eq!(opcode, Opcode::LOAD);
+
+        let opcode = Opcode::from("illegal");
+        assert_eq!(opcode, Opcode::IGL);
     }
 }
