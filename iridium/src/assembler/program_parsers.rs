@@ -1,8 +1,6 @@
-use nom::combinator::complete;
-use nom::{multi::many1, IResult};
+use nom::{branch::alt, combinator::eof, multi::many_till, IResult};
 
-use super::instruction_parsers::instruction_one;
-use super::instruction_parsers::AssemblerInstruction;
+use super::instruction_parsers::*;
 
 #[derive(Debug)]
 pub struct Program {
@@ -20,7 +18,10 @@ impl Program {
 }
 
 pub fn program(i: &str) -> IResult<&str, Program> {
-    let (i, instructions) = many1(complete(instruction_one))(i)?;
+    let (i, (instructions, _)) = many_till(
+        alt((instruction_one, instruction_two, instruction_three)),
+        eof,
+    )(i)?;
     Ok((i, Program { instructions }))
 }
 

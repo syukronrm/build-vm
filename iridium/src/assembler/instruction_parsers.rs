@@ -55,9 +55,10 @@ impl AssemblerInstruction {
     }
 }
 
+// LOAD $1 #100
 pub fn instruction_one(i: &str) -> IResult<&str, AssemblerInstruction> {
     let (i, _) = multispace0(i)?;
-    let (i, o) = opcode_load(i)?;
+    let (i, o) = opcode(i)?;
     let (i, r) = register(i)?;
     let (i, i_) = integer_operand(i)?;
     let (i, _) = multispace0(i)?;
@@ -68,6 +69,42 @@ pub fn instruction_one(i: &str) -> IResult<&str, AssemblerInstruction> {
             operand1: Some(r),
             operand2: Some(i_),
             operand3: None,
+        },
+    ))
+}
+
+// HLT
+pub fn instruction_two(i: &str) -> IResult<&str, AssemblerInstruction> {
+    let (i, _) = multispace0(i)?;
+    let (i, o) = opcode(i)?;
+    let (i, _) = multispace0(i)?;
+    Ok((
+        i,
+        AssemblerInstruction {
+            opcode: o,
+            operand1: None,
+            operand2: None,
+            operand3: None,
+        },
+    ))
+}
+
+// ADD $0 $1 $2
+pub fn instruction_three(i: &str) -> IResult<&str, AssemblerInstruction> {
+    let (i, _) = multispace0(i)?;
+    let (i, o) = opcode(i)?;
+    let (i, r1) = register(i)?;
+    let (i, r2) = register(i)?;
+    let (i, r3) = register(i)?;
+    let (i, _) = multispace0(i)?;
+
+    Ok((
+        i,
+        AssemblerInstruction {
+            opcode: o,
+            operand1: Some(r1),
+            operand2: Some(r2),
+            operand3: Some(r3),
         },
     ))
 }
@@ -92,5 +129,39 @@ mod tests {
                 }
             ))
         );
+    }
+
+    #[test]
+    fn test_parse_instruction_two() {
+        let result = instruction_two("hlt\n");
+        assert_eq!(
+            result,
+            Ok((
+                "",
+                AssemblerInstruction {
+                    opcode: Token::Op { code: Opcode::HLT },
+                    operand1: None,
+                    operand2: None,
+                    operand3: None,
+                }
+            ))
+        );
+    }
+
+    #[test]
+    fn test_parse_instruction_three() {
+        let result = instruction_three("add $0 $1 $2");
+        assert_eq!(
+            result,
+            Ok((
+                "",
+                AssemblerInstruction {
+                    opcode: Token::Op { code: Opcode::ADD },
+                    operand1: Some(Token::Register { reg_num: 0 }),
+                    operand2: Some(Token::Register { reg_num: 1 }),
+                    operand3: Some(Token::Register { reg_num: 2 }),
+                }
+            ))
+        )
     }
 }
