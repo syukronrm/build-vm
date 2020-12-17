@@ -12,6 +12,7 @@ pub enum Opcode {
     EQ,
     JEQ,
     JNEQ,
+    ALOC,
     IGL,
 }
 
@@ -30,6 +31,7 @@ impl From<u8> for Opcode {
             9 => return Opcode::EQ,
             10 => return Opcode::JEQ,
             11 => return Opcode::JNEQ,
+            12 => return Opcode::ALOC,
             _ => return Opcode::IGL,
         }
     }
@@ -50,6 +52,7 @@ impl From<&str> for Opcode {
             "eq" => Opcode::EQ,
             "jeq" => Opcode::JEQ,
             "jneq" => Opcode::JNEQ,
+            "aloc" => Opcode::ALOC,
             _ => Opcode::IGL,
         }
     }

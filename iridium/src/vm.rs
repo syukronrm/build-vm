@@ -4,6 +4,7 @@ pub struct VM {
     pub registers: [i32; 32],
     pc: usize,
     pub program: Vec<u8>,
+    heap: Vec<u8>,
     remainder: u32,
     equal_flag: bool,
 }
@@ -14,6 +15,7 @@ impl VM {
             registers: [0; 32],
             pc: 0,
             program: vec![],
+            heap: vec![],
             remainder: 0,
             equal_flag: false,
         }
@@ -98,6 +100,11 @@ impl VM {
                 if !self.equal_flag {
                     self.pc = target as usize;
                 }
+            }
+            Opcode::ALOC => {
+                let register = self.registers[self.next_8_bits() as usize];
+                let new_end = self.heap.len() + register as usize;
+                self.heap.resize(new_end, 0);
             }
             _ => {
                 println!("Uncovered instructin! Terminating!");
@@ -275,5 +282,13 @@ mod tests {
         test_vm.equal_flag = false;
         test_vm.run_once();
         assert_eq!(test_vm.pc, 5);
+    }
+
+    #[test]
+    fn test_opcode_aloc() {
+        let mut test_vm = get_test_vm();
+        test_vm.program = vec![12, 1, 0, 0];
+        test_vm.run_once();
+        assert_eq!(test_vm.heap.len(), 10);
     }
 }
