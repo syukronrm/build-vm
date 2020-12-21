@@ -106,8 +106,8 @@ impl VM {
                 let new_end = self.heap.len() + register as usize;
                 self.heap.resize(new_end, 0);
             }
-            _ => {
-                println!("Uncovered instructin! Terminating!");
+            Opcode::IGL => {
+                println!("Uncovered instruction! Terminating!");
                 return true;
             }
         }
