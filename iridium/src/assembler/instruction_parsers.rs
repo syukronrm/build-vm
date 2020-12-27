@@ -34,6 +34,10 @@ impl AssemblerInstruction {
             }
         }
 
+        while bytes.len() < 4 {
+            bytes.push(0);
+        }
+
         bytes
     }
 
